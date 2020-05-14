@@ -1,0 +1,8 @@
+build/
+.clangd/
+node_modules
+compile_commands.json
+package-lock.json
+*.o
+*.so
+*.dylib

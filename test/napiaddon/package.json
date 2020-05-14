@@ -1,0 +1,8 @@
+{
+  "name": "napiaddon",
+  "main": "build/Release/napi.node",
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "gypfile": true
+}

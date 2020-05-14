@@ -1,0 +1,31 @@
+{
+  "name": "sbffi",
+  "version": "1.0.0",
+  "description": "Dynamic C function calls from JS, powered by dyncall.",
+  "main": "index.js",
+  "scripts": {
+    "install": "cmake-js compile",
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bengl/dyncalljs.git"
+  },
+  "keywords": [
+    "dyncall",
+    "ffi",
+    "c",
+    "dynamic",
+    "function"
+  ],
+  "author": "Bryan English <bryan@bryanenglish.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bengl/dyncalljs/issues"
+  },
+  "homepage": "https://github.com/bengl/dyncalljs#readme",
+  "devDependencies": {
+    "cmake-js": "^6.1.0",
+    "ffi-napi": "^2.5.0"
+  }
+}
