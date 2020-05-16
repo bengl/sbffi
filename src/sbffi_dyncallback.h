@@ -1,9 +1,6 @@
-#include "node_api_types.h"
 #include <stdlib.h>
-#include <node_api.h>
-#define NAPI_VERSION 6
 #include <dyncall_callback.h>
-#include "macros.h"
+#include "sbffi_common.h"
 
 typedef struct cb_sig {
   napi_threadsafe_function func;

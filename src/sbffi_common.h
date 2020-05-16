@@ -1,5 +1,5 @@
-#include "js_native_api.h"
-#include "js_native_api_types.h"
+#include <node_api.h>
+#define NAPI_VERSION 6
 #include <assert.h>
 #include <stdio.h>
 #ifndef MACROS_H
@@ -70,5 +70,25 @@ typedef enum fn_type {
   fn_type_u_long,
   fn_type_u_long_long,
 } fn_type;
+
+#define call_types_except_void(V)\
+  V(fn_type_bool, DCbool, dcCallBool, dcArgBool, dcbArgBool, B)\
+  V(fn_type_char, DCchar, dcCallChar, dcArgChar, dcbArgChar, c)\
+  V(fn_type_short, DCshort, dcCallShort, dcArgShort, dcbArgShort, s)\
+  V(fn_type_int, DCint, dcCallInt, dcArgInt, dcbArgInt, i)\
+  V(fn_type_long, DClong, dcCallLong, dcArgLong, dcbArgLong, j)\
+  V(fn_type_long_long, DClonglong, dcCallLongLong, dcArgLongLong, dcbArgLongLong, l)\
+  V(fn_type_float, DCfloat, dcCallFloat, dcArgFloat, dcbArgFloat, f)\
+  V(fn_type_double, DCdouble, dcCallDouble, dcArgDouble, dcbArgDouble, d)\
+  V(fn_type_pointer, DCpointer, dcCallPointer, dcArgPointer, dcbArgPointer, p)
+// TODO struct is missing from this ^
+
+#define callback_types_except_void(V)\
+  call_types_except_void(V)\
+  V(fn_type_u_char, DCuchar, _, _, dcbArgUChar, C)\
+  V(fn_type_u_short, DCushort, _, _, dcbArgUShort, S)\
+  V(fn_type_u_int, DCuint, _, _, dcbArgUInt, I)\
+  V(fn_type_u_long, DCulong, _, _, dcbArgULong, J)\
+  V(fn_type_u_long_long, DCulonglong, _, _, dcbArgULongLong, L)\
 
 #endif

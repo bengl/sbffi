@@ -1,7 +1,4 @@
-#include <node_api.h>
-#define NAPI_VERSION 6
-#include "macros.h"
-
+#include "sbffi_common.h"
 #include "sbffi_dyncallback.h"
 #include "sbffi_dynload.h"
 #include "sbffi_dyncall.h"

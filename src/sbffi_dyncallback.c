@@ -1,11 +1,5 @@
 #include "sbffi_dyncallback.h"
-#include "dyncall_args.h"
-#include "dyncall_types.h"
-#include "js_native_api.h"
-#include "node_api.h"
-#include "node_api_types.h"
 #include <string.h>
-#include <assert.h>
 
 const char * ASYNC_NAME = "sbffi:callback";
 
@@ -31,27 +25,14 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
 
   for (uint32_t i = 0; i < sig->argc; i++) {
     switch (sig->argv[i]) {
-#define js_cb_handler_arg(enumTyp, typ, argFn) \
+      case fn_type_void:
+        exit(1); // TODO handle this better
+#define js_cb_handler_arg(enumTyp, typ, _3, _4, argFn, _6) \
       case enumTyp:\
         *(typ *)offset = argFn(args);\
         offset = offset + sizeof(typ);\
         break;
-      js_cb_handler_arg(fn_type_bool, DCbool, dcbArgBool)
-      js_cb_handler_arg(fn_type_char, DCchar, dcbArgChar)
-      js_cb_handler_arg(fn_type_short, DCshort, dcbArgShort)
-      js_cb_handler_arg(fn_type_int, DCint, dcbArgInt)
-      js_cb_handler_arg(fn_type_long, DClong, dcbArgLong)
-      js_cb_handler_arg(fn_type_long_long, DClonglong, dcbArgLongLong)
-      js_cb_handler_arg(fn_type_float, DCfloat, dcbArgFloat)
-      js_cb_handler_arg(fn_type_double, DCdouble, dcbArgDouble)
-      js_cb_handler_arg(fn_type_pointer, DCpointer, dcbArgPointer)
-      case fn_type_void:
-        exit(1); // TODO handle this better
-      js_cb_handler_arg(fn_type_u_char, DCuchar, dcbArgUChar)
-      js_cb_handler_arg(fn_type_u_short, DCushort, dcbArgUShort)
-      js_cb_handler_arg(fn_type_u_int, DCuint, dcbArgUInt)
-      js_cb_handler_arg(fn_type_u_long, DCulong, dcbArgULong)
-      js_cb_handler_arg(fn_type_u_long_long, DCulonglong, dcbArgULongLong)
+      callback_types_except_void(js_cb_handler_arg)
     }
   }
 
@@ -70,26 +51,13 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
   // TODO the process stays alive after the callback is done. maybe we need to unref?
 
   switch(sig->return_type) {
-#define js_cb_return_type(enumTyp, typ, sym) \
+    case fn_type_void:
+      return 'v';
+#define js_cb_return_type(enumTyp, typ, _3, _4, _5, sym) \
     case enumTyp:\
       result->sym = *(typ *)offset;\
       return textSigValues[enumTyp];
-    js_cb_return_type(fn_type_bool, DCbool, B)
-    js_cb_return_type(fn_type_char, DCchar, c)
-    js_cb_return_type(fn_type_short, DCshort, s)
-    js_cb_return_type(fn_type_int, DCint, i)
-    js_cb_return_type(fn_type_long, DClong, j)
-    js_cb_return_type(fn_type_long_long, DClonglong, l)
-    js_cb_return_type(fn_type_float, DCfloat, f)
-    js_cb_return_type(fn_type_double, DCdouble, d)
-    js_cb_return_type(fn_type_pointer, DCpointer, p)
-    case fn_type_void:
-      return 'v';
-    js_cb_return_type(fn_type_u_char, DCuchar, C)
-    js_cb_return_type(fn_type_u_short, DCushort, S)
-    js_cb_return_type(fn_type_u_int, DCuint, I)
-    js_cb_return_type(fn_type_u_long, DCulong, J)
-    js_cb_return_type(fn_type_u_long_long, DCulonglong, L)
+    callback_types_except_void(js_cb_return_type)
   }
 }
 
@@ -111,21 +79,10 @@ void call_js(napi_env env, napi_value js_cb, void * context, void * data) {
 
 size_t getTypeSize(fn_type typ) {
   switch(typ) {
-    case fn_type_bool: return sizeof(DCbool);
-    case fn_type_char: return sizeof(DCchar);
-    case fn_type_short: return sizeof(DCshort);
-    case fn_type_int: return sizeof(DCint);
-    case fn_type_long: return sizeof(DClong);
-    case fn_type_long_long: return sizeof(DClonglong);
-    case fn_type_float: return sizeof(DCfloat);
-    case fn_type_double: return sizeof(DCdouble);
-    case fn_type_pointer: return sizeof(DCpointer);
     case fn_type_void: return 0;
-    case fn_type_u_char: return sizeof(DCuchar);
-    case fn_type_u_short: return sizeof(DCushort);
-    case fn_type_u_int: return sizeof(DCuint);
-    case fn_type_u_long: return sizeof(DCulong);
-    case fn_type_u_long_long: return sizeof(DCulonglong);
+#define get_size_type(enumTyp, typ, _3, _4, _5, _6)\
+    case enumTyp: return sizeof(typ);
+    callback_types_except_void(get_size_type)
   }
 }
 

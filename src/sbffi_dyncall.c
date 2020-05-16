@@ -34,52 +34,36 @@ napi_value js_addSignature(napi_env env, napi_callback_info info) {
     sig->argv[i] = (fn_type)argTyp;
   }
 
+  DCCallVM * vm = dcNewCallVM(256);
+  dcMode(vm, DC_CALL_C_DEFAULT);
+  dcReset(vm);
+  sig->vm = vm;
+
   napi_return_uint64((uint64_t)sig)
 }
 
-#define callToBuf(dcFn, dcTyp) void call_##dcFn(DCCallVM * vm, DCpointer funcptr) {\
+#define call_to_buf(_1, dcTyp, dcFn, _4, _5, _6) void call_##dcFn(DCCallVM * vm, DCpointer funcptr) {\
   dcTyp * retVal = (dcTyp*)(callBuffer + 8);\
   *retVal = dcFn(vm, funcptr);\
 }
+call_types_except_void(call_to_buf)
 
-callToBuf(dcCallBool, DCbool)
-callToBuf(dcCallChar, DCchar)
-callToBuf(dcCallShort, DCshort)
-callToBuf(dcCallInt, DCint)
-callToBuf(dcCallLong, DClong)
-callToBuf(dcCallLongLong, DClonglong)
-callToBuf(dcCallFloat, DCfloat)
-callToBuf(dcCallDouble, DCdouble)
-callToBuf(dcCallPointer, DCpointer)
-
-napi_value js_call(napi_env env, napi_callback_info info) {
+ napi_value js_call(napi_env env, napi_callback_info info) {
   fn_sig * sig = *(fn_sig **)callBuffer;
   void * origOffset = callBuffer;
   void * offset = callBuffer + sizeof(fn_sig *);
   void (*callFn)(DCCallVM *, DCpointer);
   switch (sig->return_type) {
-#define js_call_ret_case(callFunc, enumTyp, typ) \
-    case enumTyp: {\
-      callFn = &callFunc;\
-      if (enumTyp != fn_type_void) {\
-        offset += sizeof(typ);\
-      }\
-      break;}
-    js_call_ret_case(dcCallVoid, fn_type_void, DCvoid)
-    js_call_ret_case(call_dcCallBool, fn_type_bool, DCbool)
-    js_call_ret_case(call_dcCallChar, fn_type_char, DCchar)
-    js_call_ret_case(call_dcCallShort, fn_type_short, DCshort)
-    js_call_ret_case(call_dcCallInt, fn_type_int, DCint)
-    js_call_ret_case(call_dcCallLong, fn_type_long, DClong)
-    js_call_ret_case(call_dcCallLongLong, fn_type_long_long, DClonglong)
-    js_call_ret_case(call_dcCallFloat, fn_type_float, DCfloat)
-    js_call_ret_case(call_dcCallDouble, fn_type_double, DCdouble)
-    js_call_ret_case(call_dcCallPointer, fn_type_pointer, DCpointer)
+    case fn_type_void:
+      callFn = &dcCallVoid;
+      break;
+#define js_call_ret_case(enumTyp, typ, callFunc, _4, _5, _6) \
+    case enumTyp: \
+      callFn = &call_##callFunc;\
+      offset += sizeof(typ);\
+      break;
+    call_types_except_void(js_call_ret_case)
   }
-
-  DCCallVM * vm = dcNewCallVM(4096);
-  dcMode(vm, DC_CALL_C_DEFAULT);
-  dcReset(vm);
 
   for (size_t i = 0; i < sig->argc; i++) {
     fn_type typ = sig->argv[i];
@@ -87,25 +71,17 @@ napi_value js_call(napi_env env, napi_callback_info info) {
       case fn_type_void:
         napi_throw_type_error(env, NULL, "cannot have void argument");
         return NULL;
-#define js_call_arg_case(argFunc, enumTyp, argTyp) \
+#define js_call_arg_case(enumTyp, argTyp, _3, argFunc, _5, _6) \
       case enumTyp:\
-        argFunc(vm, *(argTyp*)offset);\
+        argFunc(sig->vm, *(argTyp*)offset);\
         offset += sizeof(argTyp);\
         break;
-      js_call_arg_case(dcArgBool, fn_type_bool, DCbool)
-      js_call_arg_case(dcArgChar, fn_type_char, DCchar)
-      js_call_arg_case(dcArgShort, fn_type_short, DCshort)
-      js_call_arg_case(dcArgInt, fn_type_int, DCint)
-      js_call_arg_case(dcArgLong, fn_type_long, DClong)
-      js_call_arg_case(dcArgLongLong, fn_type_long_long, DClonglong)
-      js_call_arg_case(dcArgFloat, fn_type_float, DCfloat)
-      js_call_arg_case(dcArgDouble, fn_type_double, DCdouble)
-      js_call_arg_case(dcArgPointer, fn_type_pointer, DCpointer)
+      call_types_except_void(js_call_arg_case)
     }
   }
 
-  callFn(vm, (DCpointer)sig->fn);
-  dcFree(vm);
+  callFn(sig->vm, (DCpointer)sig->fn);
+  dcReset(sig->vm);
 
   return NULL;
 }

@@ -1,11 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
-#include <node_api.h>
-#define NAPI_VERSION 6
 #include <dyncall.h>
-#include "macros.h"
+#include "sbffi_common.h"
 
 typedef struct fn_sig {
+  DCCallVM * vm;
   void * fn;
   fn_type return_type;
   size_t argc;
