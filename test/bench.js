@@ -1,3 +1,5 @@
+require('./ensure-built');
+
 const sbffi = require('../lib/index.js');
 const ffi = require('ffi-napi');
 const { add: napiAdder } = require('./napiaddon');

@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "install": "cmake-js compile",
+    "bench": "node test/bench.js",
     "test": "node test/test.js"
   },
   "repository": {
