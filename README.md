@@ -43,8 +43,8 @@ To specify a callback, identify it in the arguments array as `[cbReturnType,
 ### Pointers
 
 Pointers are currently assumed to be 64-bit, and can be passed to native
-functions by specifying the type as `uint64_t`. (Note: this will change in the
-future!)
+functions by specifying the type as `pointer` or referring to any other type
+with an asterisk in the string, for example: `uint8_t *`.
 
 You can put raw data into a Buffer, and then get a pointer to the start of that
 buffer with:
