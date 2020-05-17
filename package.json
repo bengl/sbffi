@@ -27,6 +27,7 @@
   "homepage": "https://github.com/bengl/dyncalljs#readme",
   "devDependencies": {
     "cmake-js": "^6.1.0",
-    "ffi-napi": "^2.5.0"
+    "ffi-napi": "^2.5.0",
+    "pitesti": "^3.0.0"
   }
 }
