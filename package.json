@@ -4,7 +4,7 @@
   "description": "Dynamic C function calls from JS, powered by dyncall.",
   "main": "lib/index.js",
   "scripts": {
-    "install": "cmake-js compile",
+    "install": "prebuild -t 5 -r napi --backend cmake-js",
     "bench": "node test/bench.js",
     "test": "node test/test.js"
   },
@@ -27,7 +27,12 @@
   "homepage": "https://github.com/bengl/dyncalljs#readme",
   "devDependencies": {
     "cmake-js": "^6.1.0",
-    "ffi-napi": "^2.5.0",
-    "pitesti": "^3.0.0"
+    "pitesti": "^3.0.0",
+    "prebuild": "^10.0.0"
+  },
+  "binary": {
+    "napi_versions": [
+      5
+    ]
   }
 }

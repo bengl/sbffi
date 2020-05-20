@@ -1,3 +1,5 @@
+require('./ensure-built');
+
 const path = require('path');
 const assert = require('assert');
 const pitesti = require('pitesti');

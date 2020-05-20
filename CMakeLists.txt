@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.12.4)
 
 project (sbffi)
+add_compile_definitions(NAPI_VERSION=${napi_build_version})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_definitions(-DNAPI_VERSION=6)
 include_directories(${CMAKE_JS_INC})

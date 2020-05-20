@@ -1,4 +1,5 @@
 build/
+prebuilds/
 .clangd/
 node_modules
 compile_commands.json

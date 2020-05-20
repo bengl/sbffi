@@ -1,5 +1,4 @@
 #include <node_api.h>
-#define NAPI_VERSION 6
 #include <assert.h>
 #include <stdio.h>
 #ifndef MACROS_H

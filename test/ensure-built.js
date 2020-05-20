@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const execSync = require('child_process');
+const { execSync } = require('child_process');
 
 if (!fs.existsSync(path.join(__dirname, 'adder', 'libadder.so'))) {
   execSync('make', { cwd: path.join(__dirname, 'adder') });
