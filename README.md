@@ -17,15 +17,15 @@ All the arguments are strings. The types must be standard C types. When
 functions take 64-bit types, the parameters must be passed as BigInts. 64-bit
 return values will also be BigInts.
 
-```
-// some C library compiled to libadder.so
+```c
+// adder.c: some C library compiled to libadder.so
 
 uint32_t add(uint32_t a, uint32_t b) {
   return a + b;
 }
 ```
 
-```
+```js
 // index.js
 
 const { getNativeFunction } = require('sbffi');
