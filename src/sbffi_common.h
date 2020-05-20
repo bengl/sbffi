@@ -1,8 +1,14 @@
 #include <node_api.h>
 #include <assert.h>
 #include <stdio.h>
-#ifndef MACROS_H
-#define MACROS_H
+#include <stdlib.h>
+#ifndef SBFFI_COMMON_H
+#define SBFFI_COMMON_H
+
+// For some reason, cmake isn't finding a version of node_api.h that has these two function in them.
+// For now, just defining them here so we don't get warnings.
+napi_status napi_create_bigint_uint64(napi_env env, uint64_t value, napi_value* result);
+napi_status napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t* result, bool* lossless);
 
 #define napi_call(expr) \
   status = expr;\

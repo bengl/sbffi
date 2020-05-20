@@ -48,7 +48,7 @@ napi_value js_addSignature(napi_env env, napi_callback_info info) {
 }
 call_types_except_void(call_to_buf)
 
- napi_value js_call(napi_env env, napi_callback_info info) {
+napi_value js_call(napi_env env, napi_callback_info info) {
   fn_sig * sig = *(fn_sig **)callBuffer;
   void * origOffset = callBuffer;
   void * offset = callBuffer + sizeof(fn_sig *);
@@ -63,6 +63,9 @@ call_types_except_void(call_to_buf)
       offset += sizeof(typ);\
       break;
     call_types_except_void(js_call_ret_case)
+    default:
+      napi_throw_type_error(env, NULL, "invalid types in signature");
+      return NULL;
   }
 
   for (size_t i = 0; i < sig->argc; i++) {
@@ -77,6 +80,9 @@ call_types_except_void(call_to_buf)
         offset += sizeof(argTyp);\
         break;
       call_types_except_void(js_call_arg_case)
+      default:
+        napi_throw_type_error(env, NULL, "invalid types in signature");
+        return NULL;
     }
   }
 
