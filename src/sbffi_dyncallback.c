@@ -3,13 +3,13 @@
 
 const char * ASYNC_NAME = "sbffi:callback";
 
-void * callBackBuffer;
+uint8_t * callBackBuffer;
 
 napi_value js_setCallBackBuffer(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_get_args(1);
   size_t len;
-  napi_call(napi_get_buffer_info(env, args[0], &callBackBuffer, &len));
+  napi_call(napi_get_buffer_info(env, args[0], (void **)&callBackBuffer, &len));
   return NULL;
 }
 
@@ -20,8 +20,8 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
   cb_sig * sig = (cb_sig *)userdata;
 
   // [ ...args, ret]
-  void * tempCallBackBuffer = malloc(sig->args_size + sig->ret_size);
-  void * offset = tempCallBackBuffer;
+  uint8_t * tempCallBackBuffer = malloc(sig->args_size + sig->ret_size);
+  uint8_t * offset = tempCallBackBuffer;
 
   for (uint32_t i = 0; i < sig->argc; i++) {
     switch (sig->argv[i]) {
@@ -64,7 +64,7 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
 void call_js(napi_env env, napi_value js_cb, void * context, void * data) {
   cb_sig * sig = (cb_sig *)context;
   cb_data * cbData = (cb_data*)data;
-  void * tempBuf = cbData->buf;
+  uint8_t * tempBuf = cbData->buf;
   memcpy(callBackBuffer, tempBuf, cbData->len);
   napi_status status;
   napi_value undefined;
@@ -94,8 +94,8 @@ napi_value js_createCallback(napi_env env, napi_callback_info info) {
   uint32_t fnArgc;
   napi_call(napi_get_array_length(env, args[1], &fnArgc));
 
-  cb_sig * sig = (cb_sig *)malloc(sizeof(cb_sig) + sizeof(fn_type[fnArgc]));
-  char * textSig = (char *)malloc(sizeof(char[fnArgc + 2]));
+  cb_sig * sig = (cb_sig *)malloc(sizeof(cb_sig) + (sizeof(fn_type) * fnArgc));
+  char * textSig = (char *)malloc(sizeof(char) * (fnArgc + 2));
   sig->return_type = retTyp;
   sig->ret_size = getTypeSize(retTyp);
   sig->argc = fnArgc;

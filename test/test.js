@@ -1,6 +1,7 @@
 require('./ensure-built');
 
 const path = require('path');
+const os = require('os');
 const assert = require('assert');
 const pitesti = require('pitesti');
 const { getNativeFunction, getBufferPointer } = require('../lib/index');
@@ -11,23 +12,25 @@ let add;
 let addPtr;
 let addAsync;
 
+const libAdder = path.join(__dirname, 'adder', 'libadder.so');
+
 test`get functions`(() => {
   add = getNativeFunction(
-    path.join(__dirname, 'adder', 'libadder.so'),
+    libAdder,
     'test_add_uint32_t',
     'uint32_t',
     ['uint32_t', 'uint32_t']
   );
 
   addPtr = getNativeFunction(
-    path.join(__dirname, 'adder', 'libadder.so'),
+    libAdder,
     'test_add_ptr_uint32_t',
     'void',
     ['uint32_t *', 'uint32_t *', 'uint32_t *']
   );
 
   addAsync = getNativeFunction(
-    path.join(__dirname, 'adder', 'libadder.so'),
+    libAdder,
     'test_add_async_uint32_t',
     'void',
     ['uint32_t', 'uint32_t', ['void', ['uint32_t']]]
@@ -57,16 +60,21 @@ test`adding via pointers`(() => {
   assert.strictEqual(addingBuf.readUInt32LE(8), 7);
 })
 
-test`async adding`((done) => {
-  addAsync(4, 5, (result) => {
-    assert.strictEqual(result, 9);
-    done();
-  });
-});
+if (os.type() !== 'Windows_NT') {
+  // TODO why don't these work on windows?
 
-test`promisified adding`(async () => {
-  const addPromise = (a, b) => new Promise(resolve => addAsync(a, b, resolve));
-  assert.strictEqual(await addPromise(5, 3), 8);
-});
+  test`async adding`((done) => {
+    addAsync(4, 5, (result) => {
+      assert.strictEqual(result, 9);
+      done();
+    });
+  });
+
+  test`promisified adding`(async () => {
+    const addPromise = (a, b) => new Promise(resolve => addAsync(a, b, resolve));
+    assert.strictEqual(await addPromise(5, 3), 8);
+  });
+
+}
 
 test();

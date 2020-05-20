@@ -1,12 +1,12 @@
 #include "sbffi_dyncall.h"
 
-void * callBuffer;
+uint8_t * callBuffer;
 
 napi_value js_setCallBuffer(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_get_args(1);
   size_t len;
-  napi_call(napi_get_buffer_info(env, args[0], &callBuffer, &len));
+  napi_call(napi_get_buffer_info(env, args[0], (void **)&callBuffer, &len));
   return NULL;
 }
 
@@ -20,7 +20,7 @@ napi_value js_addSignature(napi_env env, napi_callback_info info) {
   uint32_t fnArgc;
   napi_call(napi_get_array_length(env, args[2], &fnArgc));
 
-  fn_sig * sig = (fn_sig *)malloc(sizeof(fn_sig) + sizeof(fn_type[fnArgc]));
+  fn_sig * sig = (fn_sig *)malloc(sizeof(fn_sig) + (sizeof(fn_type) * fnArgc));
   sig->fn = fnPtr;
   sig->return_type = retTyp;
   sig->argc = fnArgc;
@@ -50,8 +50,8 @@ call_types_except_void(call_to_buf)
 
 napi_value js_call(napi_env env, napi_callback_info info) {
   fn_sig * sig = *(fn_sig **)callBuffer;
-  void * origOffset = callBuffer;
-  void * offset = callBuffer + sizeof(fn_sig *);
+  uint8_t * origOffset = callBuffer;
+  uint8_t * offset = callBuffer + sizeof(fn_sig *);
   void (*callFn)(DCCallVM *, DCpointer);
   switch (sig->return_type) {
     case fn_type_void:

@@ -12,7 +12,7 @@ typedef struct cb_sig {
 } cb_sig;
 
 typedef struct cb_data {
-  void * buf;
+  uint8_t * buf;
   size_t len;
 } cb_data;
 
