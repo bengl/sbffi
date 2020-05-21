@@ -97,3 +97,12 @@ js: 0.061ms
 ```
 
 Of course, YMMV.
+
+## Contributing
+
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md),
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [TODO.md](./TODO.md).
+
+## License
+
+Please see [LICENSE.txt](./LICENSE.txt).

@@ -10,21 +10,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/bengl/dyncalljs.git"
+    "url": "git+ssh://git@github.com/bengl/sbffi.git"
   },
   "keywords": [
     "dyncall",
     "ffi",
     "c",
+    "native",
+    "addon",
     "dynamic",
     "function"
   ],
   "author": "Bryan English <bryan@bryanenglish.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bengl/dyncalljs/issues"
+    "url": "https://github.com/bengl/sbffi/issues"
   },
-  "homepage": "https://github.com/bengl/dyncalljs#readme",
+  "homepage": "https://github.com/bengl/sbffi#readme",
   "devDependencies": {
     "cmake-js": "^6.1.0",
     "pitesti": "^3.0.0",
