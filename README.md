@@ -13,9 +13,10 @@ native code.
 
 **`sbffi.getNativeFunction(pathToSharedLibrary, functionName, returnType, [argType1, argType2, ...])`**
 
-All the arguments are strings. The types must be standard C types. When
-functions take 64-bit types, the parameters must be passed as BigInts. 64-bit
-return values will also be BigInts.
+All the arguments are strings. The types must be standard C types. See the
+**Types** section below for details. When functions take 64-bit types, the
+parameters must be passed as BigInts. 64-bit return values will also be
+BigInts.
 
 ```c
 // adder.c: some C library compiled to libadder.so
@@ -39,6 +40,26 @@ const result = add(23, 34);
 
 To specify a callback, identify it in the arguments array as `[cbReturnType,
 [cbArgTyp1, cbArgType2, ...]]`.
+
+### Types
+
+The following types are supported:
+
+* `(u)int[8|16|32|64]_t`
+* `bool`
+* `(unsigned) char`
+* `(unsigned) short`
+* `(unsigned) int`
+* `(unsigned) long`
+* `(unsigned) long long`
+* `float`
+* `double`
+* `size_t`
+
+128-bit types are not yet supported, and while this list may grow over time, for
+now other types can be used if they're aliases of the above types.
+
+See the section below about pointers.
 
 ### Pointers
 

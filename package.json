@@ -6,7 +6,8 @@
   "scripts": {
     "install": "prebuild -t 5 -r napi --backend cmake-js",
     "bench": "node test/bench.js",
-    "test": "node test/test.js"
+    "test": "node test/test.js",
+    "clean": "rm -rf build prebuilds"
   },
   "repository": {
     "type": "git",
