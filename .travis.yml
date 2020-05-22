@@ -14,6 +14,7 @@ deploy:
   file: prebuilds/*
   file_glob: true
   skip_cleanup: true
+  overwrite: true
   on:
     repo: bengl/sbffi
     tags: true
