@@ -1,4 +1,3 @@
-#include "js_native_api.h"
 #include "sbffi_common.h"
 #include "sbffi_dyncallback.h"
 #include "sbffi_dynload.h"

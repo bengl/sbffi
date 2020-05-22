@@ -7,3 +7,4 @@ package-lock.json
 *.o
 *.so
 *.dylib
+travis.log
