@@ -60,21 +60,16 @@ test`adding via pointers`(() => {
   assert.strictEqual(addingBuf.readUInt32LE(8), 7);
 })
 
-if (os.type() !== 'Windows_NT') {
-  // TODO why don't these work on windows?
-
-  test`async adding`((done) => {
-    addAsync(4, 5, (result) => {
-      assert.strictEqual(result, 9);
-      done();
-    });
+test`async adding`((done) => {
+  addAsync(4, 5, (result) => {
+    assert.strictEqual(result, 9);
+    done();
   });
+});
 
-  test`promisified adding`(async () => {
-    const addPromise = (a, b) => new Promise(resolve => addAsync(a, b, resolve));
-    assert.strictEqual(await addPromise(5, 3), 8);
-  });
-
-}
+test`promisified adding`(async () => {
+  const addPromise = (a, b) => new Promise(resolve => addAsync(a, b, resolve));
+  assert.strictEqual(await addPromise(5, 3), 8);
+});
 
 test();
