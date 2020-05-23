@@ -28,10 +28,12 @@
     "url": "https://github.com/bengl/sbffi/issues"
   },
   "homepage": "https://github.com/bengl/sbffi#readme",
+  "dependencies": {
+    "prebuild": "^10.0.0"
+  },
   "devDependencies": {
     "cmake-js": "^6.1.0",
-    "pitesti": "^3.0.0",
-    "prebuild": "^10.0.0"
+    "pitesti": "^3.0.0"
   },
   "binary": {
     "napi_versions": [
