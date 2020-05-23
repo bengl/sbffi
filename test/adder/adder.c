@@ -10,6 +10,10 @@
   void test_add_async_##t(t a, t b, void (*cb)(t)) {\
     cb(a + b);\
   }\
+  void test_add_async_twice_##t(t a, t b, void (*cb)(t)) {\
+    cb(a + b);\
+    cb(a + b);\
+  }\
 
 mk_adder(uint8_t)
 mk_adder(uint16_t)

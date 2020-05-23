@@ -10,6 +10,7 @@ const test = pitesti();
 let add;
 let addPtr;
 let addAsync;
+let addTwiceAsync;
 
 const libAdder = path.join(__dirname, 'adder', 'libadder.so');
 
@@ -31,6 +32,13 @@ test`get functions`(() => {
   addAsync = getNativeFunction(
     libAdder,
     'test_add_async_uint32_t',
+    'void',
+    ['uint32_t', 'uint32_t', ['void', ['uint32_t']]]
+  );
+
+  addTwiceAsync = getNativeFunction(
+    libAdder,
+    'test_add_async_twice_uint32_t',
     'void',
     ['uint32_t', 'uint32_t', ['void', ['uint32_t']]]
   );
@@ -69,6 +77,16 @@ test`async adding`((done) => {
 test`promisified adding`(async () => {
   const addPromise = (a, b) => new Promise(resolve => addAsync(a, b, resolve));
   assert.strictEqual(await addPromise(5, 3), 8);
+});
+
+test`calling callback more than once`((done) => {
+  let counter = 0;
+  addTwiceAsync(4, 5, (result) => {
+    assert.strictEqual(result, 9);
+    if (++counter === 2) {
+      done();
+    }
+  });
 });
 
 test();
