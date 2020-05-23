@@ -1,6 +1,6 @@
 {
   "name": "sbffi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dynamic C function calls from JS, powered by dyncall.",
   "main": "lib/index.js",
   "scripts": {
