@@ -1,7 +1,6 @@
 require('./ensure-built');
 
 const path = require('path');
-const os = require('os');
 const assert = require('assert');
 const pitesti = require('pitesti');
 const { getNativeFunction, getBufferPointer } = require('../lib/index');
@@ -47,7 +46,7 @@ test`basic adding`(() => {
 test`getBufferPointer`(() => {
   const testBuf = Buffer.alloc(10);
   const testBufPtr = getBufferPointer(testBuf);
-  assert.strictEqual(typeof testBufPtr, 'bigint')
+  assert.strictEqual(typeof testBufPtr, 'bigint');
   assert(testBufPtr > 0n);
 });
 
@@ -58,7 +57,7 @@ test`adding via pointers`(() => {
   const addingBufPtr = getBufferPointer(addingBuf);
   addPtr(addingBufPtr, addingBufPtr + 4n, addingBufPtr + 8n);
   assert.strictEqual(addingBuf.readUInt32LE(8), 7);
-})
+});
 
 test`async adding`((done) => {
   addAsync(4, 5, (result) => {

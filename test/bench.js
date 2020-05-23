@@ -9,13 +9,13 @@ const libraryPath = path.join(__dirname, 'adder', 'libadder.so');
 
 let u32 = 'ulong';
 const { test_add_uint32_t: ffiAdder } = ffi.Library(libraryPath, {
-  test_add_uint32_t: [ u32, [ u32, u32 ] ]
+  test_add_uint32_t: [u32, [u32, u32]]
 });
 
 u32 = 'uint32_t';
 const sbffiAdder = sbffi.getNativeFunction(libraryPath, 'test_add_uint32_t', u32, [u32, u32]);
 
-function jsAdder(a, b) {
+function jsAdder (a, b) {
   return a + b;
 }
 

@@ -4,9 +4,10 @@
   "description": "Dynamic C function calls from JS, powered by dyncall.",
   "main": "lib/index.js",
   "scripts": {
-    "install": "prebuild-install -t 5 -r napi || prebuild -t 5 -r napi --backend cmake-js",
+    "install": "prebuild-install -t 5 -r napi || npm run build",
+    "build": "prebuild -t 5 -r napi --backend cmake-js",
     "bench": "node test/bench.js",
-    "test": "node test/test.js",
+    "test": "eslint . && node test/test.js",
     "clean": "rm -rf build prebuilds"
   },
   "repository": {
@@ -33,6 +34,12 @@
   },
   "devDependencies": {
     "cmake-js": "^6.1.0",
+    "eslint": "^7.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "pitesti": "^3.0.0",
     "prebuild": "^10.0.0"
   },
