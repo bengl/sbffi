@@ -4,7 +4,7 @@
   "description": "Dynamic C function calls from JS, powered by dyncall.",
   "main": "lib/index.js",
   "scripts": {
-    "install": "prebuild -t 5 -r napi --backend cmake-js",
+    "install": "prebuild-install || prebuild -t 5 -r napi --backend cmake-js",
     "bench": "node test/bench.js",
     "test": "node test/test.js",
     "clean": "rm -rf build prebuilds"
@@ -29,11 +29,12 @@
   },
   "homepage": "https://github.com/bengl/sbffi#readme",
   "dependencies": {
-    "prebuild": "^10.0.0"
+    "prebuild-install": "^5.3.4"
   },
   "devDependencies": {
     "cmake-js": "^6.1.0",
-    "pitesti": "^3.0.0"
+    "pitesti": "^3.0.0",
+    "prebuild": "^10.0.0"
   },
   "binary": {
     "napi_versions": [
