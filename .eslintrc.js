@@ -7,6 +7,9 @@ module.exports = {
   extends: [
     'standard'
   ],
+  globals: {
+    BigInt: true
+  },
   parserOptions: {
     ecmaVersion: 11
   },
