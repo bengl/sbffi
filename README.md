@@ -74,10 +74,21 @@ buffer with:
 
 Arrays and strings must be passed as pointers.
 
-## Installation
+### Structs
 
-Installation requires that [`cmake`](https://cmake.org/) is installed. Other
-than that, this should install as an npm module without issue.
+For now, `sbfffi` doesn't have any built-in support for structs. That being
+said, there are some helpful libraries like
+[`shared-structs`](https://www.npmjs.com/package/shared-structs) and
+[`ref-napi`](https://www.npmjs.com/package/ref-napi) (and its family of
+modules). As long as you can build up a C struct into a Buffer, you can pass
+pointers to them into C functions. Non-pointer struct arguments or return values
+are not supported.
+
+## Development
+
+Using a non-release version of `sbffi` requires that
+[`cmake`](https://cmake.org/) is installed in order to compile the native
+addon.
 
 ## Benchmarks
 
