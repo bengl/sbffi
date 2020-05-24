@@ -2,7 +2,8 @@ require('./ensure-built');
 
 const sbffi = require('../lib/index.js');
 const ffi = require('ffi-napi');
-const { add: napiAdder } = require('./napiaddon');
+const { add: napiAdder, sbAdd } = require('./napiaddon');
+const { requireWat } = require('require-wat');
 const path = require('path');
 
 const libraryPath = path.join(__dirname, 'adder', 'libadder.so');
@@ -14,6 +15,8 @@ const { test_add_uint32_t: ffiAdder } = ffi.Library(libraryPath, {
 
 u32 = 'uint32_t';
 const sbffiAdder = sbffi.getNativeFunction(libraryPath, 'test_add_uint32_t', u32, [u32, u32]);
+
+const { add: wasmAdder } = requireWat(path.join(__dirname, '/adder/adder.wat'));
 
 function jsAdder (a, b) {
   return a + b;
@@ -41,9 +44,23 @@ for (let j = 0; j < REPS; j++) {
   }
   console.timeEnd('napi-addon');
 
+  console.time('napi-addon-sb');
+  for (let i = 0; i < ITERATIONS; i++) {
+    sbAdd(i, i);
+  }
+  console.timeEnd('napi-addon-sb');
+
+  console.time('wasm');
+  for (let i = 0; i < ITERATIONS; i++) {
+    wasmAdder(i, i);
+  }
+  console.timeEnd('wasm');
+
   console.time('js');
   for (let i = 0; i < ITERATIONS; i++) {
     jsAdder(i, i);
   }
   console.timeEnd('js');
+
+  console.log('---');
 }

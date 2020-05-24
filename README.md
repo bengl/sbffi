@@ -86,35 +86,53 @@ simple adding function from the test library using the following techniques:
 
 * **`ffi-napi`**: A successor to `node-ffi` compatible with modern versions of
   Node.js.
-* **`napi-addon`**: A very simple/normal Node.js addon using NAPI in C.
 * **`sbffi`**: This library.
+* **`napi-addon`**: A very simple/normal Node.js addon using NAPI in C.
+* **`napi-addon-sb`**: A NAPI addon using the same shared-buffer technique as
+  `sbffi`, but with a hard-coded function call, rather than a dynamic/FFI call.
+* **`wasm`**: The adding function compiled to WebAssembly.
 * **`js`**: Re-implementing the function in plain JavaScript.
 
 Each function will be called 100000 times, in 5 repetitions, timed with
 `console.time()`. Here are the results on my machine (2019 Lenovo X1 Extreme,
-running Ubuntu):
+running Ubuntu, Node v12):
 
 ```
-ffi-napi: 920.891ms
-sbffi: 44.159ms
-napi-addon: 7.942ms
-js: 2.847ms
-ffi-napi: 772.344ms
-sbffi: 33.896ms
-napi-addon: 4.274ms
-js: 0.06ms
-ffi-napi: 754.909ms
-sbffi: 33.842ms
-napi-addon: 4.166ms
-js: 0.065ms
-ffi-napi: 759.859ms
-sbffi: 34.272ms
-napi-addon: 4.02ms
-js: 0.061ms
-ffi-napi: 763.716ms
-sbffi: 34.181ms
-napi-addon: 4.103ms
-js: 0.061ms
+ffi-napi: 1103.680ms
+sbffi: 39.981ms
+napi-addon: 8.214ms
+napi-addon-sb: 6.795ms
+wasm: 2.802ms
+js: 2.644ms
+---
+ffi-napi: 1128.388ms
+sbffi: 97.446ms
+napi-addon: 3.631ms
+napi-addon-sb: 3.308ms
+wasm: 0.918ms
+js: 0.045ms
+---
+ffi-napi: 1419.159ms
+sbffi: 29.797ms
+napi-addon: 3.946ms
+napi-addon-sb: 3.717ms
+wasm: 0.871ms
+js: 0.090ms
+---
+ffi-napi: 1285.210ms
+sbffi: 73.335ms
+napi-addon: 4.618ms
+napi-addon-sb: 3.651ms
+wasm: 0.930ms
+js: 0.096ms
+---
+ffi-napi: 772.013ms
+sbffi: 29.467ms
+napi-addon: 3.790ms
+napi-addon-sb: 3.352ms
+wasm: 0.847ms
+js: 0.087ms
+---
 ```
 
 Of course, YMMV.
