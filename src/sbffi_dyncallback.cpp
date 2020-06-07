@@ -1,16 +1,16 @@
-#include "sbffi_dyncallback.h"
+#include "sbffi_dyncallback.hpp"
+#include <node_api.h>
 #include <string.h>
+#include <cassert>
+
+namespace sbffi {
 
 const char * ASYNC_NAME = "sbffi:callback";
 
 uint8_t * callBackBuffer;
 
-napi_value js_setCallBackBuffer(napi_env env, napi_callback_info info) {
-  napi_status status;
-  napi_get_args(1);
-  size_t len;
-  napi_call(napi_get_buffer_info(env, args[0], (void **)&callBackBuffer, &len));
-  return NULL;
+void js_setCallBackBuffer(const CallbackInfo& info) {
+  callBackBuffer = info[0].As<Buffer<uint8_t>>().Data();
 }
 
 // dyncall_disgnature.h
@@ -20,7 +20,7 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
   cb_sig * sig = (cb_sig *)userdata;
 
   // [ ...args, ret]
-  uint8_t * tempCallBackBuffer = malloc(sig->args_size + sig->ret_size);
+  uint8_t * tempCallBackBuffer = (uint8_t *)malloc(sig->args_size + sig->ret_size);
   uint8_t * offset = tempCallBackBuffer;
 
   for (uint32_t i = 0; i < sig->argc; i++) {
@@ -32,7 +32,7 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
         *(typ *)offset = argFn(args);\
         offset = offset + sizeof(typ);\
         break;
-      callback_types_except_void(js_cb_handler_arg)
+      CALLBACK_TYPES_EXCEPT_VOID(js_cb_handler_arg)
     }
   }
 
@@ -43,7 +43,7 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
   napi_status status;
   status = napi_acquire_threadsafe_function(sig->func);
   assert(status == napi_ok);
-  status = napi_call_threadsafe_function(sig->func, data, true);
+  status = napi_call_threadsafe_function(sig->func, data, napi_tsfn_blocking);
   assert(status == napi_ok);
   status = napi_release_threadsafe_function(sig->func, napi_tsfn_release);
   assert(status == napi_ok);
@@ -57,7 +57,7 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
     case enumTyp:\
       result->sym = *(typ *)offset;\
       return textSigValues[enumTyp];
-    callback_types_except_void(js_cb_return_type)
+    CALLBACK_TYPES_EXCEPT_VOID(js_cb_return_type)
   }
 }
 
@@ -68,9 +68,12 @@ void call_js(napi_env env, napi_value js_cb, void * context, void * data) {
   memcpy(callBackBuffer, tempBuf, cbData->len);
   napi_status status;
   napi_value undefined;
-  napi_call(napi_get_undefined(env, &undefined));
+  status = napi_get_undefined(env, &undefined);
+  assert(status == napi_ok);
   napi_value result;
-  napi_call(napi_call_function(env, undefined, js_cb, 0, NULL, &result));
+  status = napi_call_function(env, undefined, js_cb, 0, NULL, &result);
+  assert(status == napi_ok);
+
   if (sig->return_type != fn_type_void) {
     memcpy(cbData->buf + sig->args_size, callBackBuffer + sig->args_size, sig->ret_size);
   }
@@ -82,30 +85,26 @@ size_t getTypeSize(fn_type typ) {
     case fn_type_void: return 0;
 #define get_size_type(enumTyp, typ, _3, _4, _5, _6)\
     case enumTyp: return sizeof(typ);
-    callback_types_except_void(get_size_type)
+    CALLBACK_TYPES_EXCEPT_VOID(get_size_type)
   }
 }
 
-napi_value js_createCallback(napi_env env, napi_callback_info info) {
-  napi_status status;
+Value js_createCallback(const CallbackInfo& info) {
+  Env env = info.Env();
 
-  napi_get_args(3)
-  napi_get_uint32(retTyp, args[0]);
-  uint32_t fnArgc;
-  napi_call(napi_get_array_length(env, args[1], &fnArgc));
+  uint32_t retTyp = info[0].As<Number>().Uint32Value();
+  Array args = info[1].As<Array>();
+  uint32_t fnArgc = args.Length();
 
   cb_sig * sig = (cb_sig *)malloc(sizeof(cb_sig) + (sizeof(fn_type) * fnArgc));
   char * textSig = (char *)malloc(sizeof(char) * (fnArgc + 2));
-  sig->return_type = retTyp;
-  sig->ret_size = getTypeSize(retTyp);
+  sig->return_type = (fn_type)retTyp;
+  sig->ret_size = getTypeSize((fn_type)retTyp);
   sig->argc = fnArgc;
   sig->args_size = 0;
   for (uint32_t i = 0; i < fnArgc; i++) {
-    napi_value key;
-    napi_call(napi_create_uint32(env, i, &key));
-    napi_value val;
-    napi_call(napi_get_property(env, args[1], key, &val));
-    napi_get_uint32(argTyp, val)
+    Value key = Number::New(env, i);
+    uint32_t argTyp = args.Get(key).As<Number>().Uint32Value();
     sig->argv[i] = (fn_type)argTyp;
     sig->args_size += getTypeSize((fn_type)argTyp);
     textSig[i] = textSigValues[argTyp];
@@ -113,13 +112,19 @@ napi_value js_createCallback(napi_env env, napi_callback_info info) {
   textSig[fnArgc] = ')';
   textSig[fnArgc+1] = textSigValues[retTyp];
 
-  napi_value cbFunc = args[2];
+  // TODO rewrite this using C++ NAPI APIs.
+  napi_status status;
+  napi_value cbFunc = info[2];
   napi_threadsafe_function threadsafeFn;
   napi_value asyncName;
-  napi_call(napi_create_string_utf8(env, ASYNC_NAME, strlen(ASYNC_NAME), &asyncName));
-  napi_call(napi_create_threadsafe_function(env, cbFunc, NULL, asyncName, 0, 1, NULL, NULL, (void *)sig, &call_js, &sig->func));
+  status = napi_create_string_utf8(env, ASYNC_NAME, strlen(ASYNC_NAME), &asyncName);
+  assert(status == napi_ok);
+  status = napi_create_threadsafe_function(env, cbFunc, NULL, asyncName, 0, 1, NULL, NULL, (void *)sig, &call_js, &sig->func);
+  assert(status == napi_ok);
 
   DCCallback * dcCb = dcbNewCallback(textSig, &cbHandler, sig);
 
-  napi_return_uint64((uint64_t)dcCb)
+  return BigInt::New(env, (uint64_t)dcCb);
+}
+
 }
