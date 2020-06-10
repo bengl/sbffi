@@ -4,8 +4,8 @@
   "description": "Dynamic C function calls from JS, powered by dyncall.",
   "main": "lib/index.js",
   "scripts": {
-    "install": "prebuild-install -t 5 -r napi || npm run build",
-    "build": "prebuild -t 5 -r napi --backend cmake-js",
+    "install": "prebuild-install -t 6 -r napi || npm run build",
+    "build": "prebuild -t 6 -r napi --backend cmake-js",
     "bench": "node --experimental-wasm-modules --no-warnings test/bench.mjs",
     "test": "eslint . && node test/test.js",
     "clean": "rm -rf build prebuilds",
@@ -47,7 +47,7 @@
   },
   "binary": {
     "napi_versions": [
-      5
+      6
     ]
   }
 }

@@ -38,11 +38,19 @@ for (let j = 0; j < REPS; j++) {
     console.timeEnd('ffi-napi');
   }
 
+  sbffi.setCallSpeed('slow');
   console.time('sbffi');
   for (let i = 0; i < ITERATIONS; i++) {
     sbffiAdder(i, i);
   }
   console.timeEnd('sbffi');
+
+  sbffi.setCallSpeed('fast');
+  console.time('sbffi-fastcall');
+  for (let i = 0; i < ITERATIONS; i++) {
+    sbffiAdder(i, i);
+  }
+  console.timeEnd('sbffi-fastcall');
 
   console.time('napi-addon');
   for (let i = 0; i < ITERATIONS; i++) {
