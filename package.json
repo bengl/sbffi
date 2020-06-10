@@ -40,6 +40,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "ffi-napi": "^3.0.1",
     "pitesti": "^3.0.0",
     "prebuild": "^10.0.0",
     "require-wat": "^2.0.2"
