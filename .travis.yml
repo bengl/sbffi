@@ -7,6 +7,7 @@ os:
 - linux
 - osx
 - windows
+script: npm ci
 deploy:
   provider: releases
   api_key:
