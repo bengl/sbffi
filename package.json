@@ -9,7 +9,7 @@
     "bench": "node test/bench.js",
     "test": "eslint . && node test/test.js",
     "clean": "rm -rf build prebuilds",
-    "ci": "npm run test && npm run bench"
+    "test-ci": "npm run test && npm run bench"
   },
   "repository": {
     "type": "git",

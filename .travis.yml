@@ -7,7 +7,7 @@ os:
 - linux
 - osx
 - windows
-script: npm ci
+script: npm run test-ci
 deploy:
   provider: releases
   api_key:
