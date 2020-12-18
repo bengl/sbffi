@@ -11,6 +11,7 @@ const add = {};
 const addPtr = {};
 const addAsync = {};
 const addTwiceAsync = {};
+let getpid;
 
 const sizes = [8, 16, 32, 64];
 
@@ -46,8 +47,14 @@ test`get functions`(() => {
         'void',
         [typ, typ, ['void', [typ]]]
       );
+
+      getpid = getNativeFunction(null, 'getpid', 'int', []);
     }
   }
+});
+
+test`non-library function`(() => {
+  assert.strictEqual(process.pid, getpid());
 });
 
 test`getBufferPointer`(() => {
