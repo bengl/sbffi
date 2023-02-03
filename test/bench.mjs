@@ -1,10 +1,12 @@
-require('./ensure-built');
+import './ensure-built.js';
 
-const sbffi = require('../lib/index.js');
-const ffi = require('ffi-napi');
-const { add: napiAdder, sbAdd } = require('./napiaddon');
-const { requireWat } = require('require-wat');
-const path = require('path');
+import sbffi from '../lib/index.js';
+import ffi from 'ffi-napi';
+import { add as napiAdder, sbAdd } from './napiaddon/index.js';
+import path from 'path';
+import * as url from 'url';
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const libraryPath = path.join(__dirname, 'adder', 'libadder.so');
 
@@ -16,7 +18,7 @@ const { test_add_uint32_t: ffiAdder } = ffi.Library(libraryPath, {
 u32 = 'uint32_t';
 const sbffiAdder = sbffi.getNativeFunction(libraryPath, 'test_add_uint32_t', u32, [u32, u32]);
 
-const { add: wasmAdder } = requireWat(path.join(__dirname, '/adder/adder.wat'));
+const { add: wasmAdder } = await import('./adder/adder.wasm');
 
 function jsAdder (a, b) {
   return a + b;

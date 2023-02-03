@@ -7,4 +7,5 @@ package-lock.json
 *.o
 *.so
 *.dylib
+*.wasm
 travis.log
