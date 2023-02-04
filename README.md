@@ -105,44 +105,44 @@ simple adding function from the test library using the following techniques:
 * **`js`**: Re-implementing the function in plain JavaScript.
 
 Each function will be called 100000 times, in 5 repetitions, timed with
-`console.time()`. Here are the results on my machine (2019 Lenovo X1 Extreme,
-running Ubuntu, Node v12):
+`console.time()`. Here are the results on my machine (AMD Ryzen 9 5900X) with
+Ubuntu 22.04.1 and Node.js 19.6.0:
 
 ```
-ffi-napi: 1103.680ms
-sbffi: 39.981ms
-napi-addon: 8.214ms
-napi-addon-sb: 6.795ms
-wasm: 2.802ms
-js: 2.644ms
+ffi-napi: 793.168ms
+sbffi: 5.267ms
+napi-addon: 3.688ms
+napi-addon-sb: 2.298ms
+wasm: 1.281ms
+js: 1.143ms
 ---
-ffi-napi: 1128.388ms
-sbffi: 97.446ms
-napi-addon: 3.631ms
-napi-addon-sb: 3.308ms
-wasm: 0.918ms
-js: 0.045ms
+ffi-napi: 978.664ms
+sbffi: 2.883ms
+napi-addon: 2.344ms
+napi-addon-sb: 0.964ms
+wasm: 0.22ms
+js: 0.033ms
 ---
-ffi-napi: 1419.159ms
-sbffi: 29.797ms
-napi-addon: 3.946ms
-napi-addon-sb: 3.717ms
-wasm: 0.871ms
-js: 0.090ms
+ffi-napi: 1.041s
+sbffi: 2.858ms
+napi-addon: 2.292ms
+napi-addon-sb: 0.98ms
+wasm: 0.218ms
+js: 0.033ms
 ---
-ffi-napi: 1285.210ms
-sbffi: 73.335ms
-napi-addon: 4.618ms
-napi-addon-sb: 3.651ms
-wasm: 0.930ms
-js: 0.096ms
+ffi-napi: 808.294ms
+sbffi: 2.878ms
+napi-addon: 2.291ms
+napi-addon-sb: 0.982ms
+wasm: 0.215ms
+js: 0.032ms
 ---
-ffi-napi: 772.013ms
-sbffi: 29.467ms
-napi-addon: 3.790ms
-napi-addon-sb: 3.352ms
-wasm: 0.847ms
-js: 0.087ms
+ffi-napi: 1.142s
+sbffi: 2.876ms
+napi-addon: 2.441ms
+napi-addon-sb: 1.161ms
+wasm: 0.218ms
+js: 0.033ms
 ---
 ```
 
