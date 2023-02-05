@@ -5,6 +5,7 @@ import ffi from 'ffi-napi';
 import { add as napiAdder, sbAdd } from './napiaddon/index.js';
 import path from 'path';
 import * as url from 'url';
+import { performance, createHistogram } from 'perf_hooks';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -24,49 +25,83 @@ function jsAdder (a, b) {
   return a + b;
 }
 
+const histFfiAdder = createHistogram();
+const perfFfiAdder = performance.timerify(ffiAdder, { histogram: histFfiAdder });
+
+const histSbffiAdder = createHistogram();
+const perfSbffiAdder = performance.timerify(sbffiAdder, { histogram: histSbffiAdder });
+
+const histNapiAdder = createHistogram();
+const perfNapiAdder = performance.timerify(napiAdder, { histogram: histNapiAdder });
+
+const histSbAdd = createHistogram();
+const perfSbAdd = performance.timerify(sbAdd, { histogram: histSbAdd });
+
+const histWasmAdder = createHistogram();
+const perfWasmAdder = performance.timerify(wasmAdder, { histogram: histWasmAdder });
+
+const histJsAdder = createHistogram();
+const perfJsAdder = performance.timerify(jsAdder, { histogram: histJsAdder });
+
 const ITERATIONS = Number(process.env.ITERATIONS) || 100000;
 const REPS = Number(process.env.REPS) || 5;
-
 
 for (let j = 0; j < REPS; j++) {
   // This one is quite a bit slower, so optionally disable it
   if (!('NO_FFI_NAPI' in process.env)) {
-    console.time('ffi-napi');
+    process.stdout.write('ffi-napi');
     for (let i = 0; i < ITERATIONS; i++) {
-      ffiAdder(i, i);
+      perfFfiAdder(i, i);
     }
-    console.timeEnd('ffi-napi');
+    console.log(' ... done!')
   }
 
-  console.time('sbffi');
+  process.stdout.write('sbffi');
   for (let i = 0; i < ITERATIONS; i++) {
-    sbffiAdder(i, i);
+    perfSbffiAdder(i, i);
   }
-  console.timeEnd('sbffi');
+  console.log(' ... done!')
 
-  console.time('napi-addon');
+  process.stdout.write('napi-addon');
   for (let i = 0; i < ITERATIONS; i++) {
-    napiAdder(i, i);
+    perfNapiAdder(i, i);
   }
-  console.timeEnd('napi-addon');
+  console.log(' ... done!')
 
-  console.time('napi-addon-sb');
+  process.stdout.write('napi-addon-sb');
   for (let i = 0; i < ITERATIONS; i++) {
-    sbAdd(i, i);
+    perfSbAdd(i, i);
   }
-  console.timeEnd('napi-addon-sb');
+  console.log(' ... done!')
 
-  console.time('wasm');
+  process.stdout.write('wasm');
   for (let i = 0; i < ITERATIONS; i++) {
-    wasmAdder(i, i);
+    perfWasmAdder(i, i);
   }
-  console.timeEnd('wasm');
+  console.log(' ... done!')
 
-  console.time('js');
+  process.stdout.write('js');
   for (let i = 0; i < ITERATIONS; i++) {
-    jsAdder(i, i);
+    perfJsAdder(i, i);
   }
-  console.timeEnd('js');
+  console.log(' ... done!')
 
   console.log('---');
 }
+
+function hist2table(hist) {
+  return {
+    min: hist.min,
+    max: hist.max,
+    mean: hist.mean,
+    stddev: hist.stddev
+  }
+}
+console.table({
+  'ffi-napi': hist2table(histFfiAdder),
+  'sbffi': hist2table(histSbffiAdder),
+  'napi-addon': hist2table(histNapiAdder),
+  'napi-addon-sb': hist2table(histSbAdd),
+  'wasm': hist2table(histWasmAdder),
+  'js': hist2table(histJsAdder),
+})
