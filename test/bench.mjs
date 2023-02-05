@@ -27,12 +27,16 @@ function jsAdder (a, b) {
 const ITERATIONS = Number(process.env.ITERATIONS) || 100000;
 const REPS = Number(process.env.REPS) || 5;
 
+
 for (let j = 0; j < REPS; j++) {
-  console.time('ffi-napi');
-  for (let i = 0; i < ITERATIONS; i++) {
-    ffiAdder(i, i);
+  // This one is quite a bit slower, so optionally disable it
+  if (!('NO_FFI_NAPI' in process.env)) {
+    console.time('ffi-napi');
+    for (let i = 0; i < ITERATIONS; i++) {
+      ffiAdder(i, i);
+    }
+    console.timeEnd('ffi-napi');
   }
-  console.timeEnd('ffi-napi');
 
   console.time('sbffi');
   for (let i = 0; i < ITERATIONS; i++) {
