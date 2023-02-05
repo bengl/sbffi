@@ -1,3 +1,4 @@
+#include "dynload.h"
 #include "v8-container.h"
 #include "v8-object.h"
 #include "v8-primitive.h"
@@ -134,6 +135,25 @@ void js_getBufPtr(const FunctionCallbackInfo<Value>& args) {
   );
 }
 
+void js_dlLoadLibrary(const FunctionCallbackInfo<Value>& args) {
+  v8::String::Utf8Value utf8val(args.GetIsolate(), args[0]);
+  args.GetReturnValue().Set(v8::BigInt::NewFromUnsigned(args.GetIsolate(), (uint64_t)dlLoadLibrary(*utf8val)));
+}
+
+void js_dlFreeLibrary(const FunctionCallbackInfo<Value>& args) {
+  dlFreeLibrary((DLLib *)args[0].As<BigInt>()->Uint64Value());
+}
+
+void js_dlFindSymbol(const FunctionCallbackInfo<Value>& args) {
+  DLLib * libPtr = NULL;
+  if (!args[0]->IsNull()) {
+    libPtr = (DLLib *)args[0].As<BigInt>()->Uint64Value();
+  }
+  v8::String::Utf8Value symName(args.GetIsolate(), args[1]);
+  void * sym = dlFindSymbol(libPtr, *symName);
+  args.GetReturnValue().Set(v8::BigInt::NewFromUnsigned(args.GetIsolate(), (uint64_t)sym));
+}
+
 void Initialize(Local<Object> exports) {
   Isolate* isolate = exports->GetIsolate();
   Local<Context> context = isolate->GetCurrentContext();
@@ -164,6 +184,14 @@ void Initialize(Local<Object> exports) {
   exports->Set(context, String::NewFromUtf8(isolate, "sizes").ToLocalChecked(), sizes);
 
   NODE_SET_METHOD(exports, "addSignature", js_addSignature);
+
+  NODE_SET_METHOD(exports, "getBufPtr", js_getBufPtr);
+
+  NODE_SET_METHOD(exports, "dlLoadLibrary", js_dlLoadLibrary);
+
+  NODE_SET_METHOD(exports, "dlFreeLibrary", js_dlFreeLibrary);
+
+  NODE_SET_METHOD(exports, "dlFindSymbol", js_dlFindSymbol);
 
 #define export_size(typ) \
 
