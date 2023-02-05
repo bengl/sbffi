@@ -24,8 +24,8 @@ function jsAdder (a, b) {
   return a + b;
 }
 
-const ITERATIONS = Number(process.env.ITERATIONS) || 100000;
-const REPS = Number(process.env.REPS) || 5;
+const ITERATIONS = Number(process.env.ITERATIONS) || 10000000;
+const REPS = Number(process.env.REPS) || 20;
 
 
 for (let j = 0; j < REPS; j++) {
@@ -45,36 +45,36 @@ for (let j = 0; j < REPS; j++) {
   }
   console.timeEnd('sbffi');
 
-  sbffi.setCallSpeed('fast');
-  console.time('sbffi-fastcall');
-  for (let i = 0; i < ITERATIONS; i++) {
-    sbffiAdder(i, i);
-  }
-  console.timeEnd('sbffi-fastcall');
-
-  console.time('napi-addon');
-  for (let i = 0; i < ITERATIONS; i++) {
-    napiAdder(i, i);
-  }
-  console.timeEnd('napi-addon');
-
-  console.time('napi-addon-sb');
-  for (let i = 0; i < ITERATIONS; i++) {
-    sbAdd(i, i);
-  }
-  console.timeEnd('napi-addon-sb');
-
-  console.time('wasm');
-  for (let i = 0; i < ITERATIONS; i++) {
-    wasmAdder(i, i);
-  }
-  console.timeEnd('wasm');
-
-  console.time('js');
-  for (let i = 0; i < ITERATIONS; i++) {
-    jsAdder(i, i);
-  }
-  console.timeEnd('js');
-
-  console.log('---');
+//  sbffi.setCallSpeed('fast');
+//  console.time('sbffi-fastcall');
+//  for (let i = 0; i < ITERATIONS; i++) {
+//    sbffiAdder(i, i);
+//  }
+//  console.timeEnd('sbffi-fastcall');
+//
+//  console.time('napi-addon');
+//  for (let i = 0; i < ITERATIONS; i++) {
+//    napiAdder(i, i);
+//  }
+//  console.timeEnd('napi-addon');
+//
+//  console.time('napi-addon-sb');
+//  for (let i = 0; i < ITERATIONS; i++) {
+//    sbAdd(i, i);
+//  }
+//  console.timeEnd('napi-addon-sb');
+//
+//  console.time('wasm');
+//  for (let i = 0; i < ITERATIONS; i++) {
+//    wasmAdder(i, i);
+//  }
+//  console.timeEnd('wasm');
+//
+//  console.time('js');
+//  for (let i = 0; i < ITERATIONS; i++) {
+//    jsAdder(i, i);
+//  }
+//  console.timeEnd('js');
+//
+//  console.log('---');
 }
