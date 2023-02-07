@@ -19,9 +19,13 @@ const types = [
   { id: 'float', size: sizeof('float') * 8 },
   { id: 'double', size: sizeof('double') * 8 },
   { id: 'int', size: sizeof('int') * 8 },
+  { id: 'unsigned int', size: sizeof('unsigned int') * 8 },
   { id: 'short', size: sizeof('short') * 8 },
+  { id: 'unsigned short', size: sizeof('unsigned short') * 8 },
   { id: 'long', size: sizeof('long') * 8 },
-  { id: 'long long', size: sizeof('long long') * 8 }
+  { id: 'unsigned long', size: sizeof('unsigned long') * 8 },
+  { id: 'long long', size: sizeof('long long') * 8 },
+  { id: 'unsigned long long', size: sizeof('unsigned long long') * 8 }
 ];
 for (const size of [8, 16, 32, 64]) {
   types.push({ id: `int${size}_t`, size: size });
@@ -33,28 +37,28 @@ test`get functions`(() => {
     const typ = type.id;
     add[typ] = getNativeFunction(
       libAdder,
-      `test_add_${typ}`.replace(' ', '_'),
+      `test_add_${typ}`.replace(/ /g, '_'),
       typ,
       [typ, typ]
     );
 
     addPtr[typ] = getNativeFunction(
       libAdder,
-      `test_add_ptr_${typ}`.replace(' ', '_'),
+      `test_add_ptr_${typ}`.replace(/ /g, '_'),
       'void',
       [typ + ' *', typ + ' *', typ + ' *']
     );
 
     addAsync[typ] = getNativeFunction(
       libAdder,
-      `test_add_async_${typ}`.replace(' ', '_'),
+      `test_add_async_${typ}`.replace(/ /g, '_'),
       'void',
       [typ, typ, ['void', [typ]]]
     );
 
     addTwiceAsync[typ] = getNativeFunction(
       libAdder,
-      `test_add_async_twice_${typ}`.replace(' ', '_'),
+      `test_add_async_twice_${typ}`.replace(/ /g, '_'),
       'void',
       [typ, typ, ['void', [typ]]]
     );

@@ -18,9 +18,13 @@
   }\
 
 mk_adder(int)
+mk_adder_type(unsigned int, unsigned_int)
 mk_adder(short)
+mk_adder_type(unsigned short, unsigned_short)
 mk_adder(long)
+mk_adder_type(unsigned long, unsigned_long)
 mk_adder_type(long long, long_long)
+mk_adder_type(unsigned long long, unsigned_long_long)
 mk_adder(uint8_t)
 mk_adder(uint16_t)
 mk_adder(uint32_t)

@@ -30,13 +30,21 @@ napi_value Init(napi_env env, napi_value exports) {
   napi_call(napi_create_uint32(env, sizeof(typ), &sizeof_val));\
   napi_call(napi_set_named_property(env, sizes, #typ, sizeof_val));\
   }
+  // These types could in theory be of different sizes on different systems.
+  // We get their size here to make it available in JS.
   export_size(char)
+  export_size(unsigned char)
   export_size(short)
+  export_size(unsigned short)
   export_size(int)
+  export_size(unsigned int)
   export_size(long)
+  export_size(unsigned long)
   export_size(long long)
+  export_size(unsigned long long)
   export_size(size_t)
   export_size(char *)
+  export_size(bool)
 
   napi_call(napi_set_named_property(env, exports, "sizes", sizes));
 
