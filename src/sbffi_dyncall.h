@@ -4,7 +4,6 @@
 #include "sbffi_common.h"
 
 typedef struct fn_sig {
-  DCCallVM * vm;
   void * fn;
   fn_type return_type;
   size_t argc;

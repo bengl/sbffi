@@ -1,12 +1,19 @@
 #include "sbffi_dyncall.h"
 
 uint8_t * callBuffer;
+DCCallVM * vm;
 
 napi_value js_setCallBuffer(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_get_args(1);
   size_t len;
   napi_call(napi_get_buffer_info(env, args[0], (void **)&callBuffer, &len));
+
+  // Initialize the DCCallVM whilr we're at it.
+  vm = dcNewCallVM(256);
+  dcMode(vm, DC_CALL_C_DEFAULT);
+  dcReset(vm);
+
   return NULL;
 }
 
@@ -33,11 +40,6 @@ napi_value js_addSignature(napi_env env, napi_callback_info info) {
     napi_call(napi_get_value_uint32(env, val, &argTyp));
     sig->argv[i] = (fn_type)argTyp;
   }
-
-  DCCallVM * vm = dcNewCallVM(256);
-  dcMode(vm, DC_CALL_C_DEFAULT);
-  dcReset(vm);
-  sig->vm = vm;
 
   napi_return_uint64((uint64_t)sig)
 }
@@ -76,7 +78,7 @@ napi_value js_call(napi_env env, napi_callback_info info) {
         return NULL;
 #define js_call_arg_case(enumTyp, argTyp, _3, argFunc, _5, _6) \
       case enumTyp:\
-        argFunc(sig->vm, *(argTyp*)offset);\
+        argFunc(vm, *(argTyp*)offset);\
         offset += sizeof(argTyp);\
         break;
       call_types_except_void(js_call_arg_case)
@@ -86,8 +88,8 @@ napi_value js_call(napi_env env, napi_callback_info info) {
     }
   }
 
-  callFn(sig->vm, (DCpointer)sig->fn);
-  dcReset(sig->vm);
+  callFn(vm, (DCpointer)sig->fn);
+  dcReset(vm);
 
   return NULL;
 }
