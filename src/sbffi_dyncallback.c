@@ -74,6 +74,7 @@ void call_js(napi_env env, napi_value js_cb, void * context, void * data) {
   if (sig->return_type != fn_type_void) {
     memcpy(cbData->buf + sig->args_size, callBackBuffer + sig->args_size, sig->ret_size);
   }
+  free(cbData->buf);
   free(cbData);
 }
 
