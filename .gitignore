@@ -9,3 +9,6 @@ package-lock.json
 *.dylib
 *.wasm
 travis.log
+*.0x/
+*.cache/
+
