@@ -52,7 +52,6 @@ call_types_except_void(call_to_buf)
 
 napi_value js_call(napi_env env, napi_callback_info info) {
   fn_sig * sig = *(fn_sig **)callBuffer;
-  uint8_t * origOffset = callBuffer;
   uint8_t * offset = callBuffer + sizeof(fn_sig *);
   void (*callFn)(DCCallVM *, DCpointer);
   switch (sig->return_type) {

@@ -41,12 +41,9 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
   data->buf = tempCallBackBuffer;
   data->len = sig->args_size + sig->ret_size;
   napi_status status;
-  status = napi_acquire_threadsafe_function(sig->func);
-  assert(status == napi_ok);
-  status = napi_call_threadsafe_function(sig->func, data, true);
-  assert(status == napi_ok);
-  status = napi_release_threadsafe_function(sig->func, napi_tsfn_release);
-  assert(status == napi_ok);
+  napi_call_no_env(napi_acquire_threadsafe_function(sig->func));
+  napi_call_no_env(napi_call_threadsafe_function(sig->func, data, true));
+  napi_call_no_env(napi_release_threadsafe_function(sig->func, napi_tsfn_release));
 
   // TODO the process stays alive after the callback is done. maybe we need to unref?
 

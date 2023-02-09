@@ -22,6 +22,12 @@ napi_status napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_
     abort();\
   }\
 
+#define napi_call_no_env(expr) \
+  status = expr;\
+  if (status != napi_ok) {\
+    abort();\
+  }\
+
 #define napi_get_args(num) \
   size_t argc = num;\
   napi_value args[num];\
