@@ -45,6 +45,17 @@ napi_value Init(napi_env env, napi_value exports) {
   export_size(size_t)
   export_size(char *)
   export_size(bool)
+  export_size(uint8_t)
+  export_size(int8_t)
+  export_size(uint16_t)
+  export_size(int16_t)
+  export_size(uint32_t)
+  export_size(int32_t)
+  export_size(uint64_t)
+  export_size(int64_t)
+  export_size(float)
+  export_size(double)
+
 
   napi_call(napi_set_named_property(env, exports, "sizes", sizes));
 
