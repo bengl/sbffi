@@ -32,6 +32,8 @@ for (const size of [8, 16, 32, 64]) {
   types.push({ id: `uint${size}_t`, size: size });
 }
 
+// TODO test worker_threads support
+
 test`get functions`(() => {
   for (const type of types) {
     const typ = type.id;

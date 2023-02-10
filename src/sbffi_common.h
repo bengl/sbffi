@@ -2,13 +2,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dyncall.h>
 #ifndef SBFFI_COMMON_H
 #define SBFFI_COMMON_H
-
-// For some reason, cmake isn't finding a version of node_api.h that has these two function in them.
-// For now, just defining them here so we don't get warnings.
-napi_status napi_create_bigint_uint64(napi_env env, uint64_t value, napi_value* result);
-napi_status napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t* result, bool* lossless);
 
 #define napi_call(expr) \
   status = expr;\
@@ -101,5 +97,11 @@ typedef enum fn_type {
   V(fn_type_u_int, DCuint, _, _, dcbArgUInt, I)\
   V(fn_type_u_long, DCulong, _, _, dcbArgULong, J)\
   V(fn_type_u_long_long, DCulonglong, _, _, dcbArgULongLong, L)\
+
+typedef struct {
+  DCCallVM * vm;
+  uint8_t * callBuffer;
+  uint8_t * callBackBuffer;
+} sbffi_data;
 
 #endif

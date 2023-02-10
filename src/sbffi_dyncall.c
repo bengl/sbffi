@@ -1,18 +1,18 @@
 #include "sbffi_dyncall.h"
-
-uint8_t * callBuffer;
-DCCallVM * vm;
+#include "js_native_api.h"
 
 napi_value js_setCallBuffer(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_get_args(1);
   size_t len;
-  napi_call(napi_get_buffer_info(env, args[0], (void **)&callBuffer, &len));
+  sbffi_data * sbData;
+  napi_call(napi_get_instance_data(env, (void*)&sbData));
+  napi_call(napi_get_buffer_info(env, args[0], (void **)&sbData->callBuffer, &len));
 
   // Initialize the DCCallVM whilr we're at it.
-  vm = dcNewCallVM(256);
-  dcMode(vm, DC_CALL_C_DEFAULT);
-  dcReset(vm);
+  sbData->vm = dcNewCallVM(256);
+  dcMode(sbData->vm, DC_CALL_C_DEFAULT);
+  dcReset(sbData->vm);
 
   return NULL;
 }
@@ -44,19 +44,29 @@ napi_value js_addSignature(napi_env env, napi_callback_info info) {
   napi_return_uint64((uint64_t)sig)
 }
 
-#define call_to_buf(_1, dcTyp, dcFn, _4, _5, _6) void call_##dcFn(DCCallVM * vm, DCpointer funcptr) {\
+#define call_to_buf(_1, dcTyp, dcFn, _4, _5, _6) void call_##dcFn(DCCallVM * vm, uint8_t * callBuffer, DCpointer funcptr) {\
   dcTyp * retVal = (dcTyp*)(callBuffer + 8);\
   *retVal = dcFn(vm, funcptr);\
 }
 call_types_except_void(call_to_buf)
+void call_dcCallVoid(DCCallVM * vm, uint8_t * callBuffer, DCpointer funcptr) {
+  dcCallVoid(vm, funcptr);
+}
 
 napi_value js_call(napi_env env, napi_callback_info info) {
+  napi_status status;
+
+  sbffi_data * sbData;
+  napi_call(napi_get_instance_data(env, (void*)&sbData));
+  uint8_t * callBuffer = sbData->callBuffer;
+  DCCallVM * vm = sbData->vm;
+
   fn_sig * sig = *(fn_sig **)callBuffer;
   uint8_t * offset = callBuffer + sizeof(fn_sig *);
-  void (*callFn)(DCCallVM *, DCpointer);
+  void (*callFn)(DCCallVM *, uint8_t *, DCpointer);
   switch (sig->return_type) {
     case fn_type_void:
-      callFn = &dcCallVoid;
+      callFn = &call_dcCallVoid;
       break;
 #define js_call_ret_case(enumTyp, typ, callFunc, _4, _5, _6) \
     case enumTyp: \
@@ -87,7 +97,7 @@ napi_value js_call(napi_env env, napi_callback_info info) {
     }
   }
 
-  callFn(vm, (DCpointer)sig->fn);
+  callFn(vm, callBuffer, (DCpointer)sig->fn);
   dcReset(vm);
 
   return NULL;
@@ -101,4 +111,3 @@ napi_value js_getBufPtr(napi_env env, napi_callback_info info) {
   napi_call(napi_get_buffer_info(env, args[0], &buffer, &len));
   napi_return_uint64((uint64_t)buffer)
 }
-

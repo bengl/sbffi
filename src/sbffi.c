@@ -1,9 +1,16 @@
+#include "dyncall.h"
 #include "sbffi_common.h"
 #include "sbffi_dyncallback.h"
 #include "sbffi_dynload.h"
 #include "sbffi_dyncall.h"
 
-napi_value Init(napi_env env, napi_value exports) {
+void finalize_sbffi_data(napi_env env, void * data, void * hint) {
+  sbffi_data * sbffiData = (sbffi_data *)data;
+  dcFree(sbffiData->vm);
+  free(sbffiData);
+}
+
+NAPI_MODULE_INIT(/* napi_env env, napi_value exports*/) {
   napi_status status;
 
 #define export_method(name, fn) {\
@@ -55,11 +62,10 @@ napi_value Init(napi_env env, napi_value exports) {
   export_size(int64_t)
   export_size(float)
   export_size(double)
-
-
   napi_call(napi_set_named_property(env, exports, "sizes", sizes));
+
+  sbffi_data * data = malloc(sizeof(sbffi_data));
+  napi_call(napi_set_instance_data(env, data, finalize_sbffi_data, NULL));
 
   return exports;
 }
-
-NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

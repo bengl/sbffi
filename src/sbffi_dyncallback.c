@@ -3,13 +3,13 @@
 
 const char * ASYNC_NAME = "sbffi:callback";
 
-uint8_t * callBackBuffer;
-
 napi_value js_setCallBackBuffer(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_get_args(1);
   size_t len;
-  napi_call(napi_get_buffer_info(env, args[0], (void **)&callBackBuffer, &len));
+  sbffi_data * sbData;
+  napi_call(napi_get_instance_data(env, (void*)&sbData));
+  napi_call(napi_get_buffer_info(env, args[0], (void **)&sbData->callBackBuffer, &len));
   return NULL;
 }
 
@@ -59,11 +59,14 @@ char cbHandler(DCCallback* cb, DCArgs* args, DCValue* result, void* userdata) {
 }
 
 void call_js(napi_env env, napi_value js_cb, void * context, void * data) {
+  napi_status status;
   cb_sig * sig = (cb_sig *)context;
   cb_data * cbData = (cb_data*)data;
   uint8_t * tempBuf = cbData->buf;
+  sbffi_data * sbData;
+  napi_call(napi_get_instance_data(env, (void*)&sbData));
+  uint8_t * callBackBuffer = sbData->callBackBuffer;
   memcpy(callBackBuffer, tempBuf, cbData->len);
-  napi_status status;
   napi_value undefined;
   napi_call(napi_get_undefined(env, &undefined));
   napi_value result;

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.12.4)
 
 project (sbffi)
-add_compile_definitions(NAPI_VERSION=${napi_build_version})
+add_compile_definitions(NAPI_VERSION=8)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_definitions(-DNAPI_VERSION=${napi_build_version})
+add_definitions(-DNAPI_VERSION=8)
 include_directories(${CMAKE_JS_INC})
 file(GLOB SOURCE_FILES "src/*.c")
 
