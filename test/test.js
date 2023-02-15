@@ -2,10 +2,9 @@ require('./ensure-built');
 
 const path = require('path');
 const assert = require('assert');
-const pitesti = require('pitesti');
 const { getNativeFunction, getBufferPointer, sizeof } = require('../lib/index');
 
-const test = pitesti();
+const test = require('test');
 
 const add = {};
 const addPtr = {};
@@ -34,7 +33,7 @@ for (const size of [8, 16, 32, 64]) {
 
 // TODO test worker_threads support
 
-test`get functions`(() => {
+test('get functions', () => {
   for (const type of types) {
     const typ = type.id;
     add[typ] = getNativeFunction(
@@ -69,11 +68,11 @@ test`get functions`(() => {
   }
 });
 
-test`non-library function`(() => {
+test('non-library function', () => {
   assert.strictEqual(process.pid, getpid());
 });
 
-test`getBufferPointer`(() => {
+test('getBufferPointer', () => {
   const testBuf = Buffer.alloc(10);
   const testBufPtr = getBufferPointer(testBuf);
   assert.strictEqual(typeof testBufPtr, 'bigint');
@@ -104,9 +103,10 @@ function write (typ, size, buf, n, i) {
 for (const type of types) {
   const typ = type.id;
   const size = type.size;
-  test.context(typ, () => {
+  test(typ, async t => {
+    const test = t.test.bind(t);
     const n = num.bind(null, typ, size);
-    test`basic adding`(() => {
+    await test('basic adding', () => {
       assert.strictEqual(add[typ](n(0), n(2)), n(2));
       assert.strictEqual(add[typ](n(4), n(5)), n(9));
       assert.strictEqual(add[typ](n(11), n(22)), n(33));
@@ -117,7 +117,7 @@ for (const type of types) {
 
     const r = read.bind(null, typ, size);
     const w = write.bind(null, typ, size);
-    test`adding via pointers`(() => {
+    await test('adding via pointers', () => {
       const addingBuf = Buffer.alloc(size * 3);
       w(addingBuf, n(4), 0);
       w(addingBuf, n(3), size / 8);
@@ -126,19 +126,19 @@ for (const type of types) {
       assert.strictEqual(r(addingBuf, (size / 8) * 2), n(7));
     });
 
-    test`async adding`((done) => {
+    await test('async adding', (t, done) => {
       addAsync[typ](n(4), n(5), (result) => {
         assert.strictEqual(result, n(9));
         done();
       });
     });
 
-    test`promisified adding`(async () => {
+    await test('promisified adding', async () => {
       const addPromise = (a, b) => new Promise(resolve => addAsync[typ](a, b, resolve));
       assert.strictEqual(await addPromise(n(5), n(3)), n(8));
     });
 
-    test`calling callback more than once`((done) => {
+    await test('calling callback more than once', (t, done) => {
       let counter = 0;
       addTwiceAsync[typ](n(4), n(5), (result) => {
         assert.strictEqual(result, n(9));
@@ -149,5 +149,3 @@ for (const type of types) {
     });
   });
 }
-
-test();
