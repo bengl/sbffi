@@ -2,6 +2,8 @@ ifeq ($(OS),Windows_NT)
 	CC = gcc
 endif
 
+CFLAGS=-pthread -fPIC
+
 all: adder.wasm libadder.so
 
 libadder.so: adder.o
