@@ -287,7 +287,6 @@ namespace Sbffi {
         data->buf = tempCallBackBuffer;
         data->len = sig->args_size + sig->ret_size;
         data->sig = sig;
-        napi_status status;
         sig->func.Acquire();
         sig->func.NonBlockingCall(data, call_js);
         sig->func.Release();
