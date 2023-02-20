@@ -1,6 +1,8 @@
 #include <node_api.h>
-#define NAPI_VERSION 6
+#include <stdint.h>
 #include <assert.h>
+
+uint32_t test_add_uint32_t(uint32_t a, uint32_t b);
 
 uint32_t buf[3];
 
