@@ -39,7 +39,8 @@ const result = add(23, 34);
 ```
 
 To specify a callback, identify it in the arguments array as `[cbReturnType,
-[cbArgTyp1, cbArgType2, ...]]`.
+[cbArgTyp1, cbArgType2, ...]]`. _Note that currently, callbacks must be called
+exactly once. 
 
 ### Types
 

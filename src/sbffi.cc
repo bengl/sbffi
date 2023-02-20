@@ -278,8 +278,7 @@ namespace Sbffi {
           free(cbData);
           // This release should only actually be done after the _last_
           // invocation of the callback. Because we're doing it like this, it
-          // should only be able to be invoked once.
-          // TODO Somehow the test for calling the callback more than once still passes. Why?
+          // the callback can only be called ONCE.
           sig->func.Release();
         };
 
