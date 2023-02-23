@@ -4,6 +4,7 @@
 #include <dynload.h>
 #include <dyncall_callback.h>
 #include <stdint.h>
+#include <dlfcn.h>
 
 #define call_types_except_void(V)\
   V(fn_type_bool, DCbool, dcCallBool, dcArgBool, dcbArgBool, B)\
@@ -153,7 +154,7 @@ namespace Sbffi {
       }
 
       Value JSDlFindSymbol(const CallbackInfo& info) {
-        DLLib * lib = NULL;
+        DLLib * lib = (DLLib *) RTLD_DEFAULT;
         if (!info[0].IsNull()) {
           lib = (DLLib *)info[0].As<BigInt>().Uint64Value(&lossless);
         }
