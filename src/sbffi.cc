@@ -5,6 +5,7 @@
 #include <dyncall_callback.h>
 #include <stdint.h>
 #include <dlfcn.h>
+#include <map>
 
 #define call_types_except_void(V)\
   V(fn_type_bool, DCbool, dcCallBool, dcArgBool, dcbArgBool, B)\
@@ -129,7 +130,8 @@ namespace Sbffi {
           InstanceMethod("getBufPtr", &Sbffi::JSGetBufferPtr),
 
           InstanceMethod("setCallBackBuffer", &Sbffi::JSSetCallBackBuffer),
-          InstanceMethod("createCallback", &Sbffi::JSCreateCallback)
+          InstanceMethod("createCallback", &Sbffi::JSCreateCallback),
+          InstanceMethod("releaseCallback", &Sbffi::JSReleaseCallback)
         });
 
         vm = dcNewCallVM(4096);
@@ -140,6 +142,7 @@ namespace Sbffi {
       DCCallVM * vm;
       uint8_t * callBuffer;
       uint8_t * callBackBuffer;
+      std::map<uint64_t, ThreadSafeFunction *> tsfns;
 
       Value JSDlLoadLibrary(const CallbackInfo& info) {
         auto libName = info[0].As<String>().Utf8Value();
@@ -277,10 +280,7 @@ namespace Sbffi {
           }
           free(cbData->buf);
           free(cbData);
-          // This release should only actually be done after the _last_
-          // invocation of the callback. Because we're doing it like this, it
-          // the callback can only be called ONCE.
-          sig->func.Release();
+          // sig->func.Release();
         };
 
         cb_data *data = (cb_data *)malloc(sizeof(cb_data));
@@ -288,7 +288,7 @@ namespace Sbffi {
         data->len = sig->args_size + sig->ret_size;
         data->sig = sig;
         sig->func.Acquire();
-        sig->func.NonBlockingCall(data, call_js);
+        sig->func.BlockingCall(data, call_js);
         sig->func.Release();
 
         switch(sig->return_type) {
@@ -345,8 +345,19 @@ namespace Sbffi {
         // addon.
 
         DCCallback * dcCb = dcbNewCallback(textSig, cbHandler, (void *)sig);
-
+        tsfns[(uint64_t)dcCb] = &sig->func;
         return BigInt::New(info.Env(), (uint64_t)dcCb);
+      }
+
+      Value JSReleaseCallback(const CallbackInfo& info) {
+        uint64_t dcCb = info[0].As<BigInt>().Uint64Value(&lossless);
+        if (tsfns[dcCb] != nullptr) {
+          ThreadSafeFunction * tsfn = tsfns[dcCb];
+          tsfn->Release();
+          tsfns.erase(dcCb);
+          return Number::New(info.Env(), 1);
+        }
+        return info.Env().Undefined();
       }
   };
 

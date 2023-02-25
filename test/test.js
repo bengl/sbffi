@@ -2,7 +2,7 @@ require('./ensure-built');
 
 const path = require('path');
 const assert = require('assert');
-const { getNativeFunction, getBufferPointer, sizeof } = require('../lib/index');
+const { createCallback, getNativeFunction, getBufferPointer, sizeof } = require('../lib/index');
 
 const test = require('test');
 
@@ -138,14 +138,16 @@ for (const type of types) {
       assert.strictEqual(await addPromise(n(5), n(3)), n(8));
     });
 
-    await test('calling callback more than once', { skip: 'Not working yet' }, (t, done) => {
+    await test('calling callback more than once', (t, done) => {
       let counter = 0;
-      addTwiceAsync[typ](n(4), n(5), (result) => {
+      const cb = createCallback((result) => {
         assert.strictEqual(result, n(9));
         if (++counter === 2) {
+          cb.destroy();
           done();
         }
-      });
+      }, ['void', [typ]]);
+      addTwiceAsync[typ](n(4), n(5), cb);
     });
   });
 }

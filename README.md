@@ -38,10 +38,6 @@ const result = add(23, 34);
 // 57
 ```
 
-To specify a callback, identify it in the arguments array as `[cbReturnType,
-[cbArgTyp1, cbArgType2, ...]]`. _Note that currently, callbacks must be called
-exactly once. 
-
 ### Types
 
 The following types are supported:
@@ -74,6 +70,37 @@ buffer with:
 **`const bufferPointer = sbffi.getBufferPointer(buffer);`**
 
 Arrays and strings must be passed as pointers.
+
+### Callbacks
+
+You can use two different styles of callbacks with `sbffi`.
+
+* **Simple callbacks** are simply passed into the function as normal. They must
+  be called _exactly once_ by the underlying native function.
+
+* **Advanced callbacks** must be wrapped with `createCallback`, and `.destroy()`
+  must be called on them when the underlying native function will no longer call
+  it. There's a slight performance advantage in using advanced callbacks and
+  re-using them, since simple callbacks create a `Napi::ThreadsafeFunction` per
+  invocation. In addition, APIs that may call the same callback multiple times
+  may be used with advanced callbacks, but not with simple callbacks.
+
+In either case, to specify a simple callback, identify it in the arguments array
+passed to `getNatveFunction()` as `[cbReturnType, [cbArgTyp1, cbArgType2,
+...]]`.
+
+For advanced callbacks, after specifying them in the native function signature,
+you can initialize them as follows:
+
+```js
+function myCb (result) { /* ... */ }
+const advancedCallback = createCallback(myCb, [cbReturnType, [cbArgTyp1, cbArgType2, ...]]);
+```
+
+You can then pass `advancedCallback` to a native function that takes in a
+callbacks with that signature, just as you would any other callback. When the
+callback is no longer needed, you can call `advancedCallback.destroy()`.
+_Failure to call `.destroy()` will keep the Node.js process alive._
 
 ### Structs
 
