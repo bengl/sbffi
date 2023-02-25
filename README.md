@@ -137,44 +137,55 @@ Each function will be called 100000 times, in 5 repetitions, timed with
 Ubuntu 22.04.1 and Node.js 19.6.0:
 
 ```
-ffi-napi: 793.168ms
-sbffi: 5.267ms
-napi-addon: 3.688ms
-napi-addon-sb: 2.298ms
-wasm: 1.281ms
-js: 1.143ms
+ffi-napi ... done!
+sbffi ... done!
+napi-addon ... done!
+napi-addon-sb ... done!
+wasm ... done!
+js ... done!
 ---
-ffi-napi: 978.664ms
-sbffi: 2.883ms
-napi-addon: 2.344ms
-napi-addon-sb: 0.964ms
-wasm: 0.22ms
-js: 0.033ms
+ffi-napi ... done!
+sbffi ... done!
+napi-addon ... done!
+napi-addon-sb ... done!
+wasm ... done!
+js ... done!
 ---
-ffi-napi: 1.041s
-sbffi: 2.858ms
-napi-addon: 2.292ms
-napi-addon-sb: 0.98ms
-wasm: 0.218ms
-js: 0.033ms
+ffi-napi ... done!
+sbffi ... done!
+napi-addon ... done!
+napi-addon-sb ... done!
+wasm ... done!
+js ... done!
 ---
-ffi-napi: 808.294ms
-sbffi: 2.878ms
-napi-addon: 2.291ms
-napi-addon-sb: 0.982ms
-wasm: 0.215ms
-js: 0.032ms
+ffi-napi ... done!
+sbffi ... done!
+napi-addon ... done!
+napi-addon-sb ... done!
+wasm ... done!
+js ... done!
 ---
-ffi-napi: 1.142s
-sbffi: 2.876ms
-napi-addon: 2.441ms
-napi-addon-sb: 1.161ms
-wasm: 0.218ms
-js: 0.033ms
+ffi-napi ... done!
+sbffi ... done!
+napi-addon ... done!
+napi-addon-sb ... done!
+wasm ... done!
+js ... done!
 ---
+┌───────────────┬──────┬───────────┬────────────┬────────────────────┐
+│    (index)    │ min  │    max    │    mean    │       stddev       │
+├───────────────┼──────┼───────────┼────────────┼────────────────────┤
+│   ffi-napi    │ 3216 │ 122159103 │ 8271.61785 │ 291769.95704110194 │
+│     sbffi     │ 120  │  3657727  │ 177.070514 │ 9480.134200345783  │
+│  napi-addon   │ 120  │  2877439  │ 181.689724 │ 9197.256781039703  │
+│ napi-addon-sb │  80  │  3256319  │ 143.028966 │ 10193.011672112762 │
+│     wasm      │  60  │  3317759  │ 170.443644 │ 16172.981925863021 │
+│      js       │  70  │  3395583  │ 141.67375  │ 12967.590912612988 │
+└───────────────┴──────┴───────────┴────────────┴────────────────────┘
 ```
 
-Of course, YMMV.
+For this benchmark, I generally see roughly similar performance between `sbffi`
+and a typical NAPI addon. Of course, YMMV.
 
 ## Contributing
 
