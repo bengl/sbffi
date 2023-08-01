@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/bengl/sbffi#readme",
   "dependencies": {
-    "node-addon-api": "^6.0.0"
+    "node-addon-api": "^6.0.0",
+    "prebuild": "^11.0.4"
   },
   "devDependencies": {
     "eslint": "^7.1.0",
