@@ -177,6 +177,9 @@ namespace Sbffi {
         uint32_t fnArgc = argv.Length();
 
         fn_sig * sig = (fn_sig *)malloc(sizeof(fn_sig) + (sizeof(fn_type) * fnArgc));
+        if (sig == NULL) {
+          throw Error::New(info.Env(), "failed to allocate the function signature");
+        }
         sig->fn = fnPtr;
         sig->return_type = (fn_type)retTyp;
         sig->argc = fnArgc;
@@ -317,8 +320,15 @@ namespace Sbffi {
         uint32_t fnArgc = argv.Length();
 
         cb_sig * sig = (cb_sig *)malloc(sizeof(cb_sig) + (sizeof(fn_type) * fnArgc));
+        if (sig == NULL) {
+          throw Error::New(info.Env(), "failed to allocate the callback signature");
+        }
 
         char * textSig = (char *)malloc(sizeof(char) * (fnArgc + 2));
+        if (textSig == NULL) {
+          free(sig);
+          throw Error::New(info.Env(), "failed to allocate the callback signature text");
+        }
         sig->return_type = (fn_type)retTyp;
         sig->ret_size = getTypeSize((fn_type)retTyp);
         sig->argc = fnArgc;
